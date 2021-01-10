@@ -1,0 +1,14 @@
+mutation CreatePool ($termPool:   [TermPoolCategoryInput!]!) {
+    admin {
+        updateTermPool(input: {categories: $termPool, replace: true})
+    }
+    createCard(input: { owner: "Jens Weber"}) {
+        cardId
+        createdAt
+        cardOwner
+        terms {
+            checkId
+            value
+        }
+    }
+}

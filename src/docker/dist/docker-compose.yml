@@ -1,0 +1,14 @@
+version: '2'
+services:
+    bingo:
+        environment:
+            - 'JAVA_OPTS=-XX:InitialHeapSize=512m -XX:MaxHeapSize=2048m -XX:PermSize=128m -XX:MaxPermSize=256m'
+        image: ${IMAGE}
+        stdin_open: true
+        tty: true
+        labels:
+            io.rancher.container.pull_image: always
+            prometheus.Port: '8080'
+            prometheus.MetricsPath: /internal/prometheus
+            prometheus.Enable: 'true'
+            prometheus.ScrapeInterval: 1m

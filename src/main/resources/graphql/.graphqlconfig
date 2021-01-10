@@ -1,0 +1,12 @@
+{
+  "name": "Bingo",
+  "schemaPath": "schema.graphqls",
+  "extensions": {
+    "endpoints": {
+      "Default GraphQL Endpoint": {
+        "url": "http://localhost:8080/bingo/api/graphql",
+        "introspect": false
+      }
+    }
+  }
+}

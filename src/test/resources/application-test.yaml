@@ -1,0 +1,8 @@
+app:
+  card:
+      size: 9
+  admin:
+    password: noop
+spring:
+  datasource:
+    password: noop

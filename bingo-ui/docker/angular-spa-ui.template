@@ -1,0 +1,54 @@
+server {
+    listen       80;
+    server_name  localhost;
+    server_tokens off;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    # TODO: Show 404 in case a /*.(js|css|eot|svg|woff2|ttf|woff) missing or /assets/*
+
+    location ~* \.(js|css|eot|svg|woff2|ttf|woff|png|jpeg|jpg|ico)$ {
+        gzip_static on;
+        root   /usr/share/nginx/html_###APP_ENVIRONMENT###;
+        add_header X-TYPE static;
+        # expires 30d; No expiry we depend on etag.
+
+        # Rewrite Static File Request to Root Folder.
+        rewrite ^/bingo/(.+?)$ /$1 break;
+    }
+
+    location /{
+        gzip_static on;
+        etag off;
+        root   /usr/share/nginx/html_###APP_ENVIRONMENT###;
+        add_header "Cache-Control" "max-age=0, no-cache, no-store, must-revalidate";
+		    add_header "Pragma" "no-cache";
+        add_header "Expires" "0";
+        try_files $uri $uri/ /index.html;
+    }
+
+    location = /version.json {
+      return 200 '{"version" : "###APP_VERSION###", "revision": "###APP_REVISION###"}';
+      etag off;
+      add_header Content-Type application/json;
+      add_header "Cache-Control" "max-age=0, no-cache, no-store, must-revalidate";
+      add_header "Pragma" "no-cache";
+      add_header "Expires" "0";
+    }
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    error_page 404 /404.html;
+
+    location = /404.html {
+        root   /usr/share/nginx/html_###APP_ENVIRONMENT###/assets;
+        internal;
+    }
+
+    location = /50x.html {
+        root   /usr/share/nginx/html_###APP_ENVIRONMENT###/assets;
+        internal;
+    }
+}

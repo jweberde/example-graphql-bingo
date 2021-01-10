@@ -1,0 +1,100 @@
+hostname: localhost
+server:
+  port: 8080
+  shutdown: GRACEFUL
+  servlet:
+    context-path: /bingo
+app:
+  admin:
+    path: /admin
+    user: admin
+    password: '{cipher}9457e69a3a16f5e85881bd2fb4777b6609f38116076f23aaf4b27e50d725c729'
+  api-path: /api
+  card-size: 9
+management:
+  endpoint:
+    health:
+      component:
+        ping: show-always
+      roles: ACTUATOR
+      show-details: when_authorized
+      show-components: always
+  server:
+    add-application-context-header: false
+    context-path: /internal/actuator
+  endpoints:
+    web:
+      base-path: /internal/actuator
+      exposure:
+        include: health, info, metrics, beans, auditevents, env, prometheus
+spring:
+  mvc:
+    static-path-pattern:/content/**:
+  jpa:
+    show-sql: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
+      ddl-auto: create-drop
+      #optional - enable SQL statements formatting.
+      format_sql: true
+      #optional - generate statistics to check if L2/query cache is actually being used.
+      generate_statistics: true
+      cache:
+        #required - turn on L2 cache.
+        use_second_level_cache: true
+        #optional - turn on query cache.
+        use_query_cache: true
+        region:
+          #required - classpath to cache region factory.
+          factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+    properties:
+      #required - enable selective caching mode - only entities with @Cacheable annotation will use L2 cache.
+      javax.persistence.sharedCache.mode: ENABLE_SELECTIVE
+  #Import Data
+  datasource:
+    # data: classpath:/data/import.sql
+    # url: jdbc:h2:file:/data/bingodb
+    # http://www.h2database.com/html/features.html#cache_settings CACHE_SIZE=100 MB in KB
+    url: jdbc:h2:mem:bingodb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false;CACHE_SIZE=100000
+    driverClassName: org.h2.Driver
+    username: user
+    password: '{cipher}18f702c87f068c80e5f7f93c384bdd4c9fafac3369f9578c95f6fc60a0d13567'
+  h2:
+    settings:
+      trace: true
+      webAdminPassword: admin
+    console:
+      enabled: true
+      path: ${app.admin.path}/h2
+graphql:
+  servlet:
+    tracing-enabled: false
+    subscriptions:
+      websocket:
+        path: ${app.api-path}/subscriptions
+    websocket:
+      enabled: true
+    mapping: ${app.api-path}/graphql
+altair:
+  mapping: ${app.admin.path}/explorer
+  endpoint:
+    graphql: ${graphql.servlet.mapping}
+    subscriptions: "ws://${hostname}:${server.port}${graphql.servlet.subscriptions.websocket.path}"
+  subscriptions:
+    timeout: 30
+    reconnect: false
+  static:
+    basePath: ${server.servlet.context-path}
+  enabled: true
+  pageTitle: Bingo Admin
+  cdn:
+    enabled: false
+    version: 2.1.7
+  props:
+    resources:
+      # altair version is generated during gradle build
+      defaultQuery: graphql/defaultQuery.altair.graphql
+      # altair version is generated during gradle build
+      variables: graphql/variables.altair.json

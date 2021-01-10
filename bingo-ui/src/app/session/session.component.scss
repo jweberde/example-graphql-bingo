@@ -1,0 +1,38 @@
+@import "src/sass/variables";
+
+.board {
+  //max-width: 1500px;
+  &.full-screen {
+    height: 100%;
+    width: 100%;
+    .mat-grid-list {
+      height: 100%;
+      width: 100%;
+      max-width: 1200px;
+      max-height: 900px;
+      margin: 0 auto;
+    }
+  }
+  mat-grid-tile.bingo-tile {
+    background: $panel-background;
+    font-size: 1.5rem;
+    mat-grid-tile-header {
+      text-align: center;
+    }
+  }
+  mat-grid-tile.game-tile {
+    background: $panel-background;
+    font-size: 1.5rem;
+    cursor: pointer;
+    .mat-icon {
+      display: none;
+      color: white;
+    }
+    &.checked {
+      .mat-icon {
+        display: inline-block;
+      }
+      background: rgba(0, 128, 0, 0.8);
+    }
+  }
+}

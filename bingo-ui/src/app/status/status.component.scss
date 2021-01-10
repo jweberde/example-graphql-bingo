@@ -1,0 +1,23 @@
+.instructions {
+  margin: 2rem 0;
+
+  .highlight {
+    color: red;
+  }
+  ol {
+    li {
+      font-size: 20px;
+      line-height: 1.5;
+    }
+  }
+}
+.sign-in {
+  margin-bottom: 2rem;
+}
+
+.selected-user {
+  margin: 2rem 0;
+  mat-list-item {
+    height: 35px;
+  }
+}

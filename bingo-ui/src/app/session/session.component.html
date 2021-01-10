@@ -1,0 +1,35 @@
+<section class="board full-screen" *ngIf="!loading; else loadingBlock">
+  <mat-grid-list [cols]="columns" rowHeight="fit">
+    <mat-grid-tile *ngIf="bingo" class="bingo-tile" [colspan]="columns">
+      <mat-grid-tile-header *ngIf="columns > 1">BINGO!</mat-grid-tile-header>
+      <b>{{ card?.owner }}</b
+      >&nbsp;QUICKLY send&nbsp;<b>BINGO</b>&nbsp; to the Chat.
+      <mat-grid-tile-footer *ngIf="columns > 1">BINGO!</mat-grid-tile-footer>
+    </mat-grid-tile>
+    <mat-grid-tile
+      class="game-tile"
+      *ngFor="let item of items; index as i"
+      (click)="updateCheck(item)"
+      [ngClass]="{ checked: item.state }"
+    >
+      <mat-icon aria-hidden="false">check_circle_outline</mat-icon>&nbsp;
+      {{ item.check.value }}
+    </mat-grid-tile>
+  </mat-grid-list>
+</section>
+
+<ng-template #loadingBlock>
+  <section class="board loading" *ngIf="newCard">
+    <mat-card>
+      Redirecting to
+      <a [routerLink]="['/session', newCard.cardId]">your new card</a>.
+      <mat-progress-bar mode="query"></mat-progress-bar>
+    </mat-card>
+  </section>
+  <!-- Loading -->
+  <section class="board loading" *ngIf="!newCard">
+    <mat-card>
+      <mat-progress-bar mode="query"></mat-progress-bar>
+    </mat-card>
+  </section>
+</ng-template>

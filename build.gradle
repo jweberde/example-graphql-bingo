@@ -1,0 +1,123 @@
+buildscript {
+    ext {
+        versionSpringGraphql = '8.0.0'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.4.0'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'distribution'
+}
+
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+distributions {
+    docker {
+        contents {
+            from tasks.jar
+            from('src/main/resources') {
+                include 'logback-spring-docker.xml'
+                include 'logback-spring.xml'
+                include 'logback-base.xml'
+                include 'logback-variables.xml'
+            }
+        }
+    }
+}
+
+ext {
+    set('springCloudVersion', "2020.0.0")
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+
+
+    implementation 'org.hibernate:hibernate-jcache'
+    implementation 'org.ehcache:ehcache'
+
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.8'
+
+    implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${versionSpringGraphql}"
+    runtimeOnly "com.graphql-java-kickstart:altair-spring-boot-starter:${versionSpringGraphql}"
+
+    implementation "net.logstash.logback:logstash-logback-encoder:4.10"
+
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.h2database:h2'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.3'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+import groovy.json.JsonOutput
+import org.apache.tools.ant.filters.StripLineBreaks
+
+task filterAltairVariables(type: Copy) {
+    from 'src/main/resources/graphql/'
+    into "$buildDir/resources/main/graphql/"
+    include("variables.json")
+    rename '^(.*).(json|graphql)$', '$1.altair.$2'
+    // Use some of the filters provided by Ant
+    filter(StripLineBreaks)
+    filter {
+        line ->
+            def out = JsonOutput.prettyPrint(line)
+            groovy.json.StringEscapeUtils.escapeJavaScript(out)
+    }
+    filteringCharset = 'UTF-8'
+}
+
+task filterAltairQuery(type: Copy) {
+    from 'src/main/resources/graphql/'
+    into "$buildDir/resources/main/graphql/"
+    include("defaultQuery.graphql")
+    rename '^(.*).(json|graphql)$', '$1.altair.$2'
+    // Use some of the filters provided by Ant
+    filter(StripLineBreaks)
+    filteringCharset = 'UTF-8'
+}
+
+task filterAltair {
+    dependsOn(filterAltairQuery, filterAltairVariables)
+}
+
+processResources.dependsOn(filterAltair)
+
+test {
+    useJUnitPlatform()
+    filter {
+        //include specific method in any of the tests
+        includeTestsMatching "*Test"
+    }
+}

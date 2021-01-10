@@ -1,0 +1,100 @@
+"""
+Bingo
+"""
+type Query {
+
+    ping: String
+
+    status(cardId: ID): CardStatus
+
+    admin: AdminQuery
+}
+
+type Mutation {
+
+    createCard(input:CardInput!):CardCreated
+
+    check(input: CardCheck!): Boolean
+
+    admin: AdminMutation
+}
+
+"Admin Only"
+type AdminQuery {
+
+    currentSessions(since:DateTimeISO8601): [CardStatus!]!
+
+    pingAdmin: String
+}
+
+"Admin Only"
+type AdminMutation {
+
+    restartBingo: Boolean
+
+    republishStatus: Int
+
+    updateTermPool(input:TermPoolInput!): Boolean
+}
+
+type Subscription {
+    # Subscribe to all new bingo card updates
+    bingoCardUpdate(cardId: ID): CardStatus!
+
+    bingoCardCreated : CardCreated!
+
+    bingoRestart: BingoRestartEvent!
+}
+
+input TermPoolInput{
+    categories: [TermPoolCategoryInput!]!
+    "Remove existing terms and replace them against the new ones."
+    replace: Boolean!
+}
+
+input TermPoolCategoryInput {
+    category: String!
+    terms: [String!]!
+}
+
+input CardInput {
+    owner: String!
+}
+
+input CardCheck {
+    cardId: ID!
+    checkId: ID!
+    checked: Boolean
+}
+
+type CardCreated {
+    cardId: ID
+    createdAt: String
+    cardOwner: String
+    terms: [CheckInfo!]!
+}
+
+type CheckInfo {
+    checkId: ID!
+    value: String!
+}
+
+# Bingo Card Update
+type CardStatus {
+    cardId: ID
+    owner: String
+
+    checkedCount: Int
+    checkedTerms: [CheckInfo!]!
+
+    missingCount: Int
+    missingTerms: [CheckInfo!]!
+}
+
+type BingoRestartEvent {
+
+    createdAt : DateTimeISO8601
+    restart: Boolean
+}
+
+scalar DateTimeISO8601

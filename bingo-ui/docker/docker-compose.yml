@@ -1,0 +1,12 @@
+version: '2'
+services:
+  bingo-app-webapp:
+    image: ${DOCKER_IMAGE}
+    stdin_open: true
+    tty: true
+    environment:
+      - 'APP_ENVIRONMENT=${TARGET_ENV}'
+    labels:
+      io.rancher.container.pull_image: always
+    # Replacing the placeholder with sed additional parameters can be added by adding an additional sed -e 's/###ONE###/one/' -e 's/###TWO###/two/'
+    # we need to use \$ because of bash -c ""

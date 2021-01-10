@@ -1,0 +1,43 @@
+<div class="container">
+  <section class="session-form">
+    <form [formGroup]="sessionForm" (submit)="submit()" autocomplete="off">
+      <mat-form-field>
+        <mat-label>Enter Your Name</mat-label>
+        <input matInput formControlName="name" />
+        <mat-icon matSuffix>games</mat-icon>
+        <mat-hint>The name will help us to identify the winner.</mat-hint>
+        <mat-error
+          *ngIf="
+            sessionForm.controls.name.touched &&
+            sessionForm.controls.name.invalid
+          "
+        >
+          <span *ngIf="sessionForm.controls.name.errors?.required"
+            >Required.</span
+          >
+          <span *ngIf="sessionForm.controls.name.errors?.maxlength"
+            >Maximum
+            {{ sessionForm.controls.name.errors?.maxlength.requiredLength }}
+            characters allowed.</span
+          >
+        </mat-error>
+      </mat-form-field>
+      <div class="redirect-progress" *ngIf="newCard">
+        Redirecting to
+        <a [routerLink]="['/session', newCard.cardId]">your card</a>.
+        <mat-progress-bar mode="query"></mat-progress-bar>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="
+          loading ||
+          ((sessionFormSubmitted || sessionForm.touched) && sessionForm.invalid)
+        "
+      >
+        Start Game
+      </button>
+    </form>
+  </section>
+</div>

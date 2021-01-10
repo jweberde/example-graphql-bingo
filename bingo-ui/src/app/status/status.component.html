@@ -1,0 +1,95 @@
+<mat-card class="instructions">
+  <mat-card-title>How to Play?</mat-card-title>
+  <mat-card-content>
+    <ol>
+      <li>
+        Go to
+        <a class="highlight" target="_blank" [href]="url">{{ url }}</a>
+      </li>
+      <li>Enter your Name, Hit &quot;Start Game&quot;</li>
+      <li>If you hear one of terms mentioned on your card. Click it!</li>
+      <li>
+        When <u>ALL</u> terms are checked, write &quot;BINGO&quot; to the Chat.
+        <div>
+          <img src="assets/zoom-functions-bar-chat.png" />
+        </div>
+      </li>
+    </ol>
+  </mat-card-content>
+</mat-card>
+<mat-card class="sign-in" *ngIf="!loggedIn">
+  <form [formGroup]="loginForm" autocomplete="off" (submit)="doLogin()">
+    <mat-form-field>
+      <mat-label>User</mat-label>
+      <input matInput placeholder="User" formControlName="username" />
+    </mat-form-field>
+    &nbsp;
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        type="password"
+        formControlName="password"
+        placeholder="Password"
+      />
+    </mat-form-field>
+    &nbsp;
+    <button mat-raised-button color="primary" type="submit">Login</button>
+  </form>
+</mat-card>
+<mat-card class="graph">
+  <mat-card-content>
+    <highcharts-chart
+      [Highcharts]="Highcharts"
+      [options]="chartOptions"
+      [callbackFunction]="chartCallback"
+      [(update)]="updateFlag"
+      [oneToOne]="oneToOneFlag"
+      style="width: 100%; height: 400px; display: block"
+    ></highcharts-chart>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-button (click)="toggleNames()">Toggle Names</button>
+    <button mat-button (click)="refresh()">Refresh</button>
+    <button mat-button *ngIf="loggedIn" (click)="doLogout()">Logout</button>
+  </mat-card-actions>
+</mat-card>
+<section class="selected-user" *ngIf="selectedCard">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{
+        clearTextNames ? selectedCard.owner : selectedCard.symbolicName
+      }}</mat-card-title>
+      <mat-card-subtitle
+        >{{ selectedCard.progress }}% -
+        <a target="_blank" [routerLink]="['/session', selectedCard.cardId]">{{
+          selectedCard.cardId
+        }}</a></mat-card-subtitle
+      >
+    </mat-card-header>
+    <mat-card-content>
+      <div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="selectedCard.progress"
+        ></mat-progress-bar>
+      </div>
+      <mat-list>
+        <mat-list-item *ngFor="let item of selectedCard.missingTerms">
+          <mat-icon matListIcon style="color: red">error_outline</mat-icon>
+          {{ item.value }}
+        </mat-list-item>
+        <mat-list-item *ngFor="let item of selectedCard.checkedTerms">
+          <mat-icon style="color: green" matListIcon
+            >check_circle_outline</mat-icon
+          >
+          {{ item.value }}
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="hideSelectedUser()">Hide</button>
+    </mat-card-actions>
+  </mat-card>
+</section>
+<div>(c) 2021</div>

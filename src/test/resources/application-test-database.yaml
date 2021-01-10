@@ -1,0 +1,7 @@
+spring:
+  #Import Data
+  datasource:
+    url: jdbc:h2:mem:test-${random.uuid};DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    driverClassName: org.h2.Driver
+    username: sa
+    password:

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <!--
+        logging:
+        pattern:
+        level: user:%mdc{userId} %5p
+    -->
+    <!-- SEE: https://logback.qos.ch/manual/layouts.html -->
+    <!-- print mdc content and -->
+    <property name="LOG_LEVEL_PATTERN" value="[%mdc] [%marker] %5p"/>
+</included>
